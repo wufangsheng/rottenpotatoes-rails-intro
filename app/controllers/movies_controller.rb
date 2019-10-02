@@ -11,7 +11,26 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @all_ratings = Movie.ratings.map { |rating| {name: rating, value: params[:ratings] ? params[:ratings].include?(rating) : true} }
+    @movies = params[:ratings]&.any? ? Movie.find_all_by_ratings(params[:ratings].keys) : Movie.all
+
+    if params[:sort]
+      @movies = @movies.order(params[:sort])
+    end
+
+    session[:sort] = params[:sort] if params[:sort]
+    session[:ratings] = params[:ratings] if params[:ratings] || params[:commit] == 'Refresh'
+
+    if (!params[:sort] && !params[:ratings]) && (session[:sort] && session[:ratings])
+      flash.keep
+      return redirect_to movies_path(sort: session[:sort], ratings: session[:ratings])
+    elsif !params[:sort] && session[:sort]
+      flash.keep
+      return redirect_to movies_path(sort: session[:sort], ratings: params[:ratings])
+    elsif !params[:ratings] && session[:ratings]
+      flash.keep
+      return redirect_to movies_path(sort: params[:sort], ratings: session[:ratings])
+    end
   end
 
   def new
