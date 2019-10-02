@@ -1,3 +1,3 @@
 # rottenpotatoes-rails-intro
-RottenPotatoes app skeleton for saasbook/hw-rails-intro
+APP URI
 http://fangsheng-wu-hw2.herokuapp.com
